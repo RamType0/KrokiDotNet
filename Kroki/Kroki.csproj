@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Authors>RamType0</Authors>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+	<RepositoryUrl>https://github.com/RamType0/KrokiDotNet</RepositoryUrl>
+	<Description>Kroki client for .NET</Description>
+    <PackageTags>Kroki</PackageTags>
+    <Copyright>© RamType0</Copyright>
+	<VersionPrefix>1.0.0</VersionPrefix>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.4" />
+  </ItemGroup>
+</Project>
