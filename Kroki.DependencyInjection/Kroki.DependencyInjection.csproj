@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Authors>RamType0</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	<RepositoryUrl>https://github.com/RamType0/KrokiDotNet</RepositoryUrl>
@@ -20,6 +21,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Kroki\Kroki.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
