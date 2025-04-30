@@ -1,102 +1,102 @@
-[![Version](https://img.shields.io/nuget/v/Kroki?logo=nuget&style=flat-square)](https://www.nuget.org/packages/RamType0.Markdig.Renderers.MudBlazor/)
-[![Nuget downloads](https://img.shields.io/nuget/dt/Kroki?label=nuget%20downloads&logo=nuget&style=flat-square)](https://www.nuget.org/packages/RamType0.Markdig.Renderers.MudBlazor/)  
+[![Version](https://img.shields.io/nuget/v/Kroki?logo=nuget&style=flat-square)](https://www.nuget.org/packages/Kroki/)
+[![Nuget downloads](https://img.shields.io/nuget/dt/Kroki?label=nuget%20downloads&logo=nuget&style=flat-square)](https://www.nuget.org/packages/Kroki/)  
 # [Kroki](https://github.com/yuzutech/kroki) integration for .NET
 
 ## Kroki Client
 
-    ### Getting started
+### Getting started
 
-    Add `KrokiClient` to services.
+Add `KrokiClient` to services.
 
-    ```C#
+```C#
 
-    builder.Services.AddKrokiClient();
+builder.Services.AddKrokiClient();
 
-    ```
+```
 
-    Or just create `KrokiClient` directly.
-
-
-    ```C#
-
-    KrokiClient client = new();
-
-    KrokiClient myHostedKrokiClient = new(new Uri("https://my-hosted-kroki.io"));
-
-    ```
+Or just create `KrokiClient` directly.
 
 
-    ### How to use
+```C#
 
-    ```razor
+KrokiClient client = new();
 
-    @using global::Kroki
-    @using System.IO.Compression
-    @inject KrokiClient KrokiClient
+KrokiClient myHostedKrokiClient = new(new Uri("https://my-hosted-kroki.io"));
 
-    <img src="@imageSrc" />
+```
 
-    @code {
-        [Parameter, EditorRequired]
-        public required string DiagramType { get; set; }
-        [Parameter, EditorRequired]
-        public required string DiagramSource { get; set; }
 
-        string imageSrc = "";
+### How to use
 
-        protected override void OnParametersSet()
-        {
-            imageSrc = KrokiClient.CreateGetUri(new()
-                {
-                    DiagramType = DiagramType,
-                    OutputFormat = FileFormat.Svg,
-                    DiagramSource = DiagramSource
-                }, CompressionLevel.Optimal).AbsoluteUri;
-        }
+```razor
+
+@using global::Kroki
+@using System.IO.Compression
+@inject KrokiClient KrokiClient
+
+<img src="@imageSrc" />
+
+@code {
+    [Parameter, EditorRequired]
+    public required string DiagramType { get; set; }
+    [Parameter, EditorRequired]
+    public required string DiagramSource { get; set; }
+
+    string imageSrc = "";
+
+    protected override void OnParametersSet()
+    {
+        imageSrc = KrokiClient.CreateGetUri(new()
+            {
+                DiagramType = DiagramType,
+                OutputFormat = FileFormat.Svg,
+                DiagramSource = DiagramSource
+            }, CompressionLevel.Optimal).AbsoluteUri;
     }
+}
 
-    ```
+```
 ## Kroki Server Hosting
 
-    # Getting started
+### Getting started
 
-    ```C#
+```C#
 
-    var kroki = builder.AddKrokiServer("kroki");
+var kroki = builder.AddKrokiServer("kroki");
 
-    var webFrontend = builder.AddProject<Projects.Web>("web-frontend")
-        .WithExternalHttpEndpoints()
-        .WithReference(kroki)
+var webFrontend = builder.AddProject<Projects.Web>("web-frontend")
+    .WithExternalHttpEndpoints()
+    .WithReference(kroki)
 
-    ```
-    # How to use
-    
-    Forward to Kroki server in your frontend project.
+```
+### How to use
 
-    ```C#
+Forward to Kroki server in your frontend project.
 
-    
-    using Yarp.ReverseProxy.Forwarder;
-    using Yarp.ReverseProxy.Transforms;
+```C#
 
-    public static IEndpointConventionBuilder MapKrokiForwarder(this IEndpointRouteBuilder endpoints)
-    {
-        return endpoints.MapForwarder("/Kroki/{**apiPath}", "http://kroki", ForwarderRequestConfig.Empty,
-            transformBuilderContext
-            => transformBuilderContext
-            .AddPathRemovePrefix("/Kroki")
-            
-            // Custom authorization logic!
-            .AddRequestTransform(transformContext =>
+
+using Yarp.ReverseProxy.Forwarder;
+using Yarp.ReverseProxy.Transforms;
+
+public static IEndpointConventionBuilder MapKrokiForwarder(this IEndpointRouteBuilder endpoints)
+{
+    return endpoints.MapForwarder("/Kroki/{**apiPath}", "http://kroki", ForwarderRequestConfig.Empty,
+        transformBuilderContext
+        => transformBuilderContext
+        .AddPathRemovePrefix("/Kroki")
+        
+        // Custom authorization logic!
+        .AddRequestTransform(transformContext =>
+        {
+
+            HttpContext httpContext = transformContext.HttpContext;
+            if(httpContext.User.Identity?.IsAuthenticated != true)
             {
-
-                HttpContext httpContext = transformContext.HttpContext;
-                if(httpContext.User.Identity?.IsAuthenticated != true)
-                {
-                    httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                }
-                return new();
-            }));
-    }
+                httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            }
+            return new();
+        }));
+}
 
     ```
