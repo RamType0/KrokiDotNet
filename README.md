@@ -1,6 +1,6 @@
 [![Version](https://img.shields.io/nuget/v/Kroki?logo=nuget&style=flat-square)](https://www.nuget.org/packages/RamType0.Markdig.Renderers.MudBlazor/)
 [![Nuget downloads](https://img.shields.io/nuget/dt/Kroki?label=nuget%20downloads&logo=nuget&style=flat-square)](https://www.nuget.org/packages/RamType0.Markdig.Renderers.MudBlazor/)  
-# [Kroki](https://github.com/yuzutech/kroki) client for .NET
+# [Kroki](https://github.com/yuzutech/kroki) integration for .NET
 
 ## Kroki Client
 
