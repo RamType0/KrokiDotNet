@@ -7,6 +7,6 @@ public class KrokiServerResource(string name) : ContainerResource(name), IResour
     private EndpointReference? httpReference;
     public EndpointReference HttpEndpoint => httpReference ??= new(this, HttpEndpointName);
 
-    public ReferenceExpression ConnectionStringExpression 
+    public ReferenceExpression ConnectionStringExpression
         => ReferenceExpression.Create($"http://{HttpEndpoint.Property(EndpointProperty.HostAndPort)}");
 }

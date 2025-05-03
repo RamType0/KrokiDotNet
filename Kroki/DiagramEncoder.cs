@@ -22,7 +22,7 @@ public static class DiagramEncoder
         {
             ArrayPool<byte>.Shared.Return(buffer);
         }
-        
+
     }
     public static string EncodeToString(ReadOnlySpan<byte> utf8DiagramSource, CompressionLevel compressionLevel)
     {
@@ -32,7 +32,7 @@ public static class DiagramEncoder
         {
             zlibStream.Write(utf8DiagramSource);
         }
-        if(!memoryStream.TryGetBuffer(out var buffer))
+        if (!memoryStream.TryGetBuffer(out var buffer))
         {
             throw new UnreachableException("Could not get inner buffer from memory stream.");
         }

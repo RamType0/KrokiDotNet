@@ -1,46 +1,18 @@
-﻿using System.Collections.Specialized;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Net.Http.Json;
-using System.Web;
 
 namespace Kroki;
 
-public class KrokiClient
+public class KrokiClient(HttpClient httpClient)
 {
-    public static Uri DefaultEndpoint { get; } = new("https://kroki.io");
-    public KrokiClient() : this(DefaultEndpoint) { }
-    /// <param name="endpoint">The Kroki endpoint to use. This should not include diagram type or output format. For example: <c>https://kroki.io</c>.</param>
-    public KrokiClient(Uri endpoint)
+    HttpClient HttpClient { get; } = httpClient;
+    public Task<HttpResponseMessage> GetAsync(KrokiRequest request, CompressionLevel diagramCompressionLevel, CancellationToken cancellationToken = default)
     {
-        Endpoint = endpoint;
+        var requestUri = KrokiHttpRequestFactory.CreateGetRequestRelativeUri(request, diagramCompressionLevel);
+        return HttpClient.GetAsync(requestUri, cancellationToken);
     }
-
-    Uri Endpoint { get; }
-    public HttpRequestMessage CreatePostRequest(KrokiRequest request)
+    public Task<HttpResponseMessage> PostAsync(KrokiRequest request, CancellationToken cancellationToken = default)
     {
-        return new()
-        {
-            RequestUri = Endpoint,
-            Content = JsonContent.Create(request),
-        };
-    }
-    public Uri CreateGetUri(KrokiRequest request, CompressionLevel diagramCompressionLevel) 
-    {
-        NameValueCollection? query;
-        if(request.DiagramOptions is { } options)
-        {
-            query = HttpUtility.ParseQueryString("");
-            foreach (var keyValue in options)
-            {
-                query.Add(keyValue.Key, keyValue.Value);
-            }
-        }
-        else
-        {
-            query = null;
-        }
-        var encodedDiagram = DiagramEncoder.EncodeToString(request.DiagramSource, diagramCompressionLevel);
-        Uri requestUri = new(Endpoint, $"{request.DiagramType}/{request.OutputFormat.ToEndpointPath()}/{encodedDiagram}?{query}");
-        return requestUri;
+        return HttpClient.PostAsJsonAsync((Uri?)null, request, cancellationToken);
     }
 }

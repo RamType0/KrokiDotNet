@@ -30,7 +30,7 @@ public static class DiagramTypes
         Symbolator = "symbolator"
         ;
     public static ReadOnlySpan<string> All => all;
-    private static readonly string[] all = 
+    private static readonly string[] all =
     [
         BlockDiagram,
         SequenceDiagram,

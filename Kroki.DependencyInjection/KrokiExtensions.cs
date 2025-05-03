@@ -2,22 +2,22 @@
 using Kroki.DependencyInjection;
 using Microsoft.Extensions.Options;
 
+#pragma warning disable IDE0130 // Namespace がフォルダー構造と一致しません
 namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130 // Namespace がフォルダー構造と一致しません
 
 public static class KrokiExtensions
 {
-    public static IServiceCollection AddKrokiClient(this IServiceCollection services, Action<KrokiClientOptions>? configureOptions = null)
+    public static OptionsBuilder<KrokiHttpRequestFactoryOptions> AddKrokiHttpRequestFactory(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
     {
-        var optionsBuilder = services.AddOptions<KrokiClientOptions>();
-        if(configureOptions is not null)
-        {
-            optionsBuilder.Configure(configureOptions);
-        }
-        services.AddSingleton(services =>
-        {
-            var options = services.GetRequiredService<IOptions<KrokiClientOptions>>().Value;
-            return new KrokiClient(options.Endpoint);
-        });
-        return services;
+        services.Add(new(
+            serviceType: typeof(KrokiHttpRequestFactory),
+            factory: services =>
+            {
+                var options = services.GetRequiredService<IOptions<KrokiHttpRequestFactoryOptions>>().Value;
+                return new KrokiHttpRequestFactory(options.Endpoint);
+            },
+        lifetime: lifetime));
+        return services.AddOptions<KrokiHttpRequestFactoryOptions>();
     }
 }
