@@ -6,22 +6,22 @@
 
 ### Getting started
 
-Add `KrokiClient` to services.
+Add `KrokiHttpRequestFactory` to services.
 
 ```C#
 
-builder.Services.AddKrokiClient();
+builder.Services.AddKrokiHttpRequestFactory();
 
 ```
 
-Or just create `KrokiClient` directly.
+Or just create `KrokiHttpRequestFactory` directly.
 
 
 ```C#
 
-KrokiClient client = new();
+KrokiHttpRequestFactory krokiHttpRequestFactory = new();
 
-KrokiClient myHostedKrokiClient = new(new Uri("https://my-hosted-kroki.io"));
+KrokiHttpRequestFactory myHostedKrokiHttpRequestFactory = new(new Uri("https://my-hosted-kroki.io"));
 
 ```
 
@@ -32,7 +32,7 @@ KrokiClient myHostedKrokiClient = new(new Uri("https://my-hosted-kroki.io"));
 
 @using global::Kroki
 @using System.IO.Compression
-@inject KrokiClient KrokiClient
+@inject KrokiHttpRequestFactory KrokiHttpRequestFactory
 
 <img src="@imageSrc" />
 
@@ -46,7 +46,7 @@ KrokiClient myHostedKrokiClient = new(new Uri("https://my-hosted-kroki.io"));
 
     protected override void OnParametersSet()
     {
-        imageSrc = KrokiClient.CreateGetUri(new()
+        imageSrc = KrokiHttpRequestFactory.CreateGetRequestUri(new()
             {
                 DiagramType = DiagramType,
                 OutputFormat = FileFormat.Svg,
