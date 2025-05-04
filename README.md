@@ -62,7 +62,11 @@ KrokiHttpRequestFactory myHostedKrokiHttpRequestFactory = new(new Uri("https://m
 
 ```C#
 
-var kroki = builder.AddKrokiServer("kroki");
+var kroki = builder.AddKrokiServer("kroki")
+    .WithKrokiMermaidServer()
+    .WithKrokiBpmnServer()
+    .WithKrokiExcalidrawServer()
+    .WithKrokiDiagramsNetServer();
 
 var webFrontend = builder.AddProject<Projects.Web>("web-frontend")
     .WithExternalHttpEndpoints()
