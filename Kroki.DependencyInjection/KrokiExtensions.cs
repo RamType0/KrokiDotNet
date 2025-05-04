@@ -14,7 +14,11 @@ public static class KrokiExtensions
             serviceType: typeof(KrokiHttpRequestFactory),
             factory: services =>
             {
-                var options = services.GetRequiredService<IOptions<KrokiHttpRequestFactoryOptions>>().Value;
+                var options = lifetime switch
+                {
+                    ServiceLifetime.Scoped => services.GetRequiredService<IOptionsSnapshot<KrokiHttpRequestFactoryOptions>>().Value,
+                    _ => services.GetRequiredService<IOptionsMonitor<KrokiHttpRequestFactoryOptions>>().CurrentValue,
+                };
                 return new KrokiHttpRequestFactory(options.Endpoint);
             },
         lifetime: lifetime));
