@@ -1,6 +1,5 @@
-﻿using System.Buffers;
-using System.Buffers.Text;
-using System.Diagnostics;
+﻿using Microsoft.IO;
+using System.Buffers;
 using System.IO.Compression;
 using System.Text;
 
@@ -8,6 +7,7 @@ namespace Kroki;
 
 public static class DiagramEncoder
 {
+    static RecyclableMemoryStreamManager MemoryStreamManager { get; } = new();
     public static string EncodeToString(ReadOnlySpan<char> diagramSource, CompressionLevel compressionLevel)
     {
         var maxUtf8Size = Encoding.UTF8.GetMaxByteCount(diagramSource.Length);
@@ -26,16 +26,17 @@ public static class DiagramEncoder
     }
     public static string EncodeToString(ReadOnlySpan<byte> utf8DiagramSource, CompressionLevel compressionLevel)
     {
-        using MemoryStream memoryStream = new();
+        using var memoryStream = MemoryStreamManager.GetStream();
 
-        using (ZLibStream zlibStream = new(memoryStream, compressionLevel, leaveOpen: true))
+
+        using (ZLibStream zLibStream = new(memoryStream, compressionLevel, leaveOpen: true))
         {
-            zlibStream.Write(utf8DiagramSource);
+            zLibStream.Write(utf8DiagramSource);
         }
-        if (!memoryStream.TryGetBuffer(out var buffer))
-        {
-            throw new UnreachableException("Could not get inner buffer from memory stream.");
-        }
-        return Base64Url.EncodeToString(buffer);
+
+        var compressedSequence = memoryStream.GetReadOnlySequence();
+
+        return Base64UrlEx.EncodeToString(compressedSequence);
     }
+    
 }
