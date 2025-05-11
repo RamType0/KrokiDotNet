@@ -16,7 +16,6 @@ public class DiagramTests(KrokiFixture fixture)
         };
         var cancellationToken = TestContext.Current.CancellationToken;
         var response = compressionLevel is { } level ? await fixture.KrokiClient.GetAsync(request, level, cancellationToken) : await fixture.KrokiClient.PostAsync(request, cancellationToken);
-        //var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
     }

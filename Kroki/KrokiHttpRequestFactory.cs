@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
@@ -22,11 +23,12 @@ public class KrokiHttpRequestFactory
 
     Uri Endpoint { get; }
 
-    public Uri CreateGetRequestUri(KrokiRequest request, CompressionLevel diagramCompressionLevel) => new(Endpoint, CreateGetRequestRelativeUri(request, diagramCompressionLevel));
-    public static Uri CreateGetRequestRelativeUri(KrokiRequest request, CompressionLevel diagramCompressionLevel)
+    public Uri CreateGetRequestUri(KrokiRequest request, CompressionLevel diagramSourceCompressionLevel) => new(Endpoint, CreateGetRequestRelativeUri(request, diagramSourceCompressionLevel));
+    public static Uri CreateGetRequestRelativeUri(KrokiRequest request, CompressionLevel diagramSourceCompressionLevel)
     {
         var query = DiagramOptionsToQuery(request.DiagramOptions);
-        var encodedDiagram = DiagramEncoder.EncodeToString(request.DiagramSource, diagramCompressionLevel);
+        EncodedDiagram encodedDiagram = new(request.DiagramSource, diagramSourceCompressionLevel);
+
         Uri requestUri = new($"{request.DiagramType}/{request.OutputFormat.ToEndpointPath()}/{encodedDiagram}?{query}", UriKind.Relative);
         return requestUri;
     }
