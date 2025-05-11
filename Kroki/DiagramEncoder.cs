@@ -1,5 +1,6 @@
 ﻿using Microsoft.IO;
 using System.Buffers;
+using System.Buffers.Text;
 using System.IO.Compression;
 using System.Text;
 
@@ -7,7 +8,18 @@ namespace Kroki;
 
 public static class DiagramEncoder
 {
-    static RecyclableMemoryStreamManager MemoryStreamManager { get; } = new();
+    const int DefaultMaxUrlLength = 4096;
+    internal static RecyclableMemoryStreamManager MemoryStreamManager { get; } = new(new()
+    {
+        // 3072 means
+        // - Base64Url.GetMaxDecodedLength(DefaultMaxUrlLength)
+        // - Multiple of 3 (Efficient for Base 64 encoding)
+        BlockSize = 3072,
+        // We cannot create encoded string longer than int.MaxValue
+        MaximumStreamCapacity = Base64Url.GetMaxDecodedLength(int.MaxValue),
+        MaximumSmallPoolFreeBytes = Base64Url.GetMaxDecodedLength(DefaultMaxUrlLength) * Environment.ProcessorCount,
+        ThrowExceptionOnToArray = true,
+    });
     public static string EncodeToString(ReadOnlySpan<char> diagramSource, CompressionLevel compressionLevel)
     {
         var maxUtf8Size = Encoding.UTF8.GetMaxByteCount(diagramSource.Length);
